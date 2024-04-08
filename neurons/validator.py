@@ -26,18 +26,6 @@ from classes.aimodel import AIModelService
 if os.path.exists(os.path.join(project_root, 'app')):
     from app.fastapi_server import create_app
 
-async def run_fastapi_with_ngrok(app):
-    # Setup ngrok tunnel
-    ngrok_tunnel = ngrok.connect(8000)
-    print('Public URL:', ngrok_tunnel.public_url)
-    try:
-        # Run the server using uvicorn
-        config = uvicorn.Config(app=app, host="0.0.0.0", port=30214)
-        server = uvicorn.Server(config)
-        await server.serve()
-    finally:
-        # Close ngrok tunnel when server exits
-        ngrok_tunnel.close()
 
 class AIModelController():
     def __init__(self):
@@ -48,6 +36,29 @@ class AIModelController():
         self.current_service = self.text_to_speech_service
         self.service = service_flags
         self.last_run_start_time = dt.datetime.now()
+        # If the 'app' folder exists, create and run the FastAPI app
+        if os.path.exists(os.path.join(project_root, 'app')):
+            # Read secret key from environment variable
+            secret_key = os.getenv("AUTH_SECRET_KEY")
+            if not secret_key:
+                raise ValueError("Auth Secret key not found in environment variable AUTH_SECRET_KEY")
+            app = create_app(secret_key)
+            # Create a task for running FastAPI with ngrok
+            self.run_fastapi_with_ngrok(app)
+
+
+    async def run_fastapi_with_ngrok(self, app):
+        # Setup ngrok tunnel
+        ngrok_tunnel = ngrok.connect(8000)
+        print('Public URL:', ngrok_tunnel.public_url)
+        try:
+            # Run the server using uvicorn
+            config = uvicorn.Config(app=app, host="0.0.0.0", port=30214)
+            server = uvicorn.Server(config)
+            await server.serve()
+        finally:
+            # Close ngrok tunnel when server exits
+            ngrok_tunnel.close()
 
     async def run_services(self):
         while True:
@@ -101,38 +112,6 @@ async def main():
     controller.new_wandb_run()
     await controller.run_services()
 
-    # Initialize an empty list to hold our tasks
-    tasks = []
-
-    # Iterate through each service and create an asynchronous task for its run_async method
-    services = [
-        controller.text_to_speech_service,
-        controller.music_generation_service,
-        controller.voice_cloning_service,
-    ]
-    for service in services:
-        if isinstance(service, TextToSpeechService):
-            service.new_wandb_run()  # Initialize the Weights & Biases run if the service is TextToSpeechService
-        task = asyncio.create_task(service.run_async())
-        tasks.append(task)
-
-        await asyncio.sleep(0.1)  # Short delay between task initializations if needed
-
-    # If the 'app' folder exists, create and run the FastAPI app
-    if os.path.exists(os.path.join(project_root, 'app')):
-        # Read secret key from environment variable
-        secret_key = os.getenv("AUTH_SECRET_KEY")
-        if not secret_key:
-            raise ValueError("Auth Secret key not found in environment variable AUTH_SECRET_KEY")
-        app = create_app(secret_key)
-        # Create a task for running FastAPI with ngrok
-        fastapi_task = asyncio.create_task(run_fastapi_with_ngrok(app))
-
-        # Wait for all tasks to complete, prioritizing the FastAPI task
-        await asyncio.gather(fastapi_task, *tasks)
-    else:
-        # If the 'app' folder does not exist, continue running other tasks normally
-        await asyncio.gather(*tasks)
 
 if __name__ == "__main__":
     asyncio.run(main())
