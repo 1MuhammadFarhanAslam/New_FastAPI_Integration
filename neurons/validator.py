@@ -39,16 +39,15 @@ class AIModelController():
 
     async def run_fastapi_with_ngrok(self, app):
         # Setup ngrok tunnel
-        ngrok_tunnel = ngrok.connect(8000)
+        ngrok_tunnel = ngrok.connect(8000, bind_tls=True)
         print('Public URL:', ngrok_tunnel.public_url)
-        try:
-            # Run the server using uvicorn
-            config = uvicorn.Config(app=app, host="0.0.0.0", port=30214)
-            server = uvicorn.Server(config)
-            await server.serve()
-        finally:
-            # Close ngrok tunnel when server exits
-            ngrok_tunnel.close()
+        # Create and start the uvicorn server as a background task
+        config = uvicorn.Config(app=app, host="0.0.0.0", port=8000)  # Ensure port matches ngrok's
+        server = uvicorn.Server(config)
+        # No need to await here, as we want this to run in the background
+        task = asyncio.create_task(server.serve())
+        return ngrok_tunnel, task  # Returning task if you need to cancel it later
+
 
     async def run_services(self):
         while True:
@@ -98,19 +97,29 @@ class AIModelController():
         bt.logging.debug(f"Started a new wandb run: {name}")
 
 async def setup_and_run(controller):
+    tasks = []
     if os.path.exists(os.path.join(project_root, 'app')):
-        # Since you cannot await in __init__, move the logic to setup FastAPI with ngrok here
         secret_key = os.getenv("AUTH_SECRET_KEY")
         if not secret_key:
             raise ValueError("Auth Secret key not found in environment variable AUTH_SECRET_KEY")
         app = create_app(secret_key)
-        await controller.run_fastapi_with_ngrok(app)  # Ensure this is awaited
-    await controller.run_services()
+        # Start FastAPI with ngrok without blocking
+        ngrok_tunnel, server_task = await controller.run_fastapi_with_ngrok(app)
+        tasks.append(server_task)  # Keep track of the server task if you need to cancel it later
+    
+    # Start service-related tasks
+    service_task = asyncio.create_task(controller.run_services())
+    tasks.append(service_task)
+
+    # Wait for all tasks to complete
+    await asyncio.gather(*tasks)
+
+    # Cleanup, in case you need to close ngrok or other resources
+    ngrok_tunnel.close()
 
 async def main():
     controller = AIModelController()
-    controller.new_wandb_run()
-    await setup_and_run(controller)  # Setup FastAPI with ngrok and run services
+    await setup_and_run(controller)
 
 if __name__ == "__main__":
     asyncio.run(main())
