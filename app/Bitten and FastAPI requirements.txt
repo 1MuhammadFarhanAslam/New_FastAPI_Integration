@@ -80,7 +80,7 @@ eth-utils==2.3.1
 exceptiongroup==1.2.0
 executing==2.0.1
 -e git+https://github.com/1MuhammadFarhanAslam/FastAPI.git@dc9acb593fa44f7ece23a5282c8563ac02ce0902#egg=fairseq&subdirectory=fseq
-fastapi==0.99.1
+fastapi==0.109.1
 ffmpy==0.3.1
 filelock==3.13.1
 flashy==0.0.2
