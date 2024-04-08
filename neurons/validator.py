@@ -36,6 +36,9 @@ class AIModelController():
         self.current_service = self.text_to_speech_service
         self.service = service_flags
         self.last_run_start_time = dt.datetime.now()
+        self.run_services()
+
+    async def run_services(self):
         # If the 'app' folder exists, create and run the FastAPI app
         if os.path.exists(os.path.join(project_root, 'app')):
             # Read secret key from environment variable
@@ -44,8 +47,7 @@ class AIModelController():
                 raise ValueError("Auth Secret key not found in environment variable AUTH_SECRET_KEY")
             app = create_app(secret_key)
             # Create a task for running FastAPI with ngrok
-            self.run_fastapi_with_ngrok(app)
-
+            await self.run_fastapi_with_ngrok(app)
 
     async def run_fastapi_with_ngrok(self, app):
         # Setup ngrok tunnel
