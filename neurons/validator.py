@@ -6,6 +6,11 @@ import wandb
 import bittensor as bt
 import uvicorn
 from pyngrok import ngrok  # Import ngrok from pyngrok
+from lib.globals import service_flags
+from classes.tts import TextToSpeechService 
+from classes.vc import VoiceCloningService
+from classes.ttm import MusicGenerationService
+from classes.aimodel import AIModelService
 
 # Set the project root path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -15,12 +20,6 @@ audio_subnet_path = os.path.abspath(project_root)
 # Add the project root and 'AudioSubnet' directories to sys.path
 sys.path.insert(0, project_root)
 sys.path.insert(0, audio_subnet_path)
-
-from lib.globals import service_flags
-from classes.tts import TextToSpeechService 
-from classes.vc import VoiceCloningService
-from classes.ttm import MusicGenerationService
-from classes.aimodel import AIModelService
 
 # Check if the 'app' folder exists
 if os.path.exists(os.path.join(project_root, 'app')):
