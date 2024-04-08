@@ -41,6 +41,7 @@ class MusicGenerationService(AIModelService):
         self.combinations = []
         self.duration = 755  #755 tokens = 15 seconds music
         self.lock = asyncio.Lock()
+        self.best_uid = self.priority_uids(self.metagraph)
         
 
     def load_prompts(self):

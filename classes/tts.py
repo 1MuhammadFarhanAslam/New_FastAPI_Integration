@@ -38,6 +38,7 @@ class TextToSpeechService(AIModelService):
         self.p_index = 0
         self.combinations = []
         self.lock = asyncio.Lock()
+        self.best_uid = self.priority_uids(self.metagraph)
         
     def load_prompts(self):
         gs_dev = load_dataset("etechgrid/Prompts_for_Voice_cloning_and_TTS")

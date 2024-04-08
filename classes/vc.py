@@ -50,6 +50,7 @@ class VoiceCloningService(AIModelService):
         self.responses = None
         self.audio_file_path = ""
         self.text_input = ""
+        self.best_uid = self.priority_uids(self.metagraph)
 
     def load_vc_prompts(self):
         gs_dev = load_dataset("etechgrid/Prompts_for_Voice_cloning_and_TTS")
