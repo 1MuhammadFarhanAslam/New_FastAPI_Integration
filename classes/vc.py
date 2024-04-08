@@ -77,13 +77,13 @@ class VoiceCloningService(AIModelService):
                 print("Keyboard interrupt detected. Exiting VoiceCloneService.")
                 break
             except Exception as e:
+                print(f"An error occurred in VoiceCloneService: {e}")
                 traceback.print_exc()
 
     async def process_huggingface_prompts(self, step):
         try:
             c_prompt = self.api.get_VC()
         except Exception as e:
-            bt.logging.error(f"An error occurred while fetching prompt: {e}")
             c_prompt = None
             async with self.lock:
                 if c_prompt:
