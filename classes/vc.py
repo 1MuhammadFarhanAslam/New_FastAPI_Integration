@@ -77,7 +77,6 @@ class VoiceCloningService(AIModelService):
                 print("Keyboard interrupt detected. Exiting VoiceCloneService.")
                 break
             except Exception as e:
-                print(f"An error occurred in VoiceCloneService: {e}")
                 traceback.print_exc()
 
     async def process_huggingface_prompts(self, step):

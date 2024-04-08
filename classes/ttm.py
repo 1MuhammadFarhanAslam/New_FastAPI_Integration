@@ -66,7 +66,6 @@ class MusicGenerationService(AIModelService):
         try:
             c_prompt = self.api.get_TTM()
         except Exception as e:
-            bt.logging.error(f"An error occurred while fetching prompt: {e}")
             c_prompt = None
 
         if step:

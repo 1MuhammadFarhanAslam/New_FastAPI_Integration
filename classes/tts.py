@@ -62,7 +62,6 @@ class TextToSpeechService(AIModelService):
         try:
             c_prompt = self.api.get_TTS()
         except Exception as e:
-            bt.logging.error(f"An error occurred while fetching prompt: {e}")
             c_prompt = None
         # Sync and update weights logic
         if step:
