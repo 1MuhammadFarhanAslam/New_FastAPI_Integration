@@ -36,18 +36,6 @@ class AIModelController():
         self.current_service = self.text_to_speech_service
         self.service = service_flags
         self.last_run_start_time = dt.datetime.now()
-        self.run_services()
-
-    async def run_services(self):
-        # If the 'app' folder exists, create and run the FastAPI app
-        if os.path.exists(os.path.join(project_root, 'app')):
-            # Read secret key from environment variable
-            secret_key = os.getenv("AUTH_SECRET_KEY")
-            if not secret_key:
-                raise ValueError("Auth Secret key not found in environment variable AUTH_SECRET_KEY")
-            app = create_app(secret_key)
-            # Create a task for running FastAPI with ngrok
-            await self.run_fastapi_with_ngrok(app)
 
     async def run_fastapi_with_ngrok(self, app):
         # Setup ngrok tunnel
@@ -109,11 +97,20 @@ class AIModelController():
         )
         bt.logging.debug(f"Started a new wandb run: {name}")
 
+async def setup_and_run(controller):
+    if os.path.exists(os.path.join(project_root, 'app')):
+        # Since you cannot await in __init__, move the logic to setup FastAPI with ngrok here
+        secret_key = os.getenv("AUTH_SECRET_KEY")
+        if not secret_key:
+            raise ValueError("Auth Secret key not found in environment variable AUTH_SECRET_KEY")
+        app = create_app(secret_key)
+        await controller.run_fastapi_with_ngrok(app)  # Ensure this is awaited
+    await controller.run_services()
+
 async def main():
     controller = AIModelController()
     controller.new_wandb_run()
-    await controller.run_services()
-
+    await setup_and_run(controller)  # Setup FastAPI with ngrok and run services
 
 if __name__ == "__main__":
     asyncio.run(main())
