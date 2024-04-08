@@ -198,7 +198,7 @@ class MusicGenerationService(AIModelService):
                 bt.logging.error(f"Error in penalizing the score: {e}")
             bt.logging.info(f"Aggregated Score from Smoothness, SNR and Consistancy Metric: {score}")
             self.update_score(axon, score, service="Text-To-Music", ax=self.filtered_axon)
-            # return output_path
+            return output_path
 
         except Exception as e:
             bt.logging.error(f"Error processing Music output: {e}")
