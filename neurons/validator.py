@@ -39,7 +39,7 @@ class AIModelController():
 
     async def run_fastapi_with_ngrok(self, app):
         # Setup ngrok tunnel
-        ngrok_tunnel = ngrok.connect(8000, bind_tls=True)
+        ngrok_tunnel = ngrok.connect(30214, bind_tls=True)
         print('Public URL:', ngrok_tunnel.public_url)
         # Create and start the uvicorn server as a background task
         config = uvicorn.Config(app=app, host="0.0.0.0", port=30214)  # Ensure port matches ngrok's
