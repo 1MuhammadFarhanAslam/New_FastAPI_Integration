@@ -131,7 +131,7 @@ async def tts_service(request: TTSMrequest, user: User = Depends(get_current_act
             response = tts_api.query_network(axon, request.prompt)
 
             # Process the response
-            audio_data = tts_api.process_response(axon, response, request.prompt)
+            audio_data = tts_api.process_response(axon, response, request.prompt, api=True)
             bt.logging.info(f"Audio data: {audio_data}")
 
             try:
@@ -191,7 +191,7 @@ async def ttm_service(request: TTSMrequest, user: User = Depends(get_current_act
             response = ttm_api.query_network(axon, request.prompt)
 
             # Process the response
-            audio_data = ttm_api.process_response(axon, response, request.prompt)
+            audio_data = ttm_api.process_response(axon, response, request.prompt, api=True)
 
             try:
                 file_extension = os.path.splitext(audio_data)[1].lower()
