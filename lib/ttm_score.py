@@ -3,7 +3,6 @@ import numpy as np
 import librosa
 import torch
 import torchaudio
-from scipy.signal import hilbert
 from audiocraft.metrics import CLAPTextConsistencyMetric
 import bittensor as bt
 

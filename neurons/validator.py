@@ -17,8 +17,6 @@ sys.path.insert(0, project_root)
 sys.path.insert(0, audio_subnet_path)
 
 from lib.globals import service_flags
-from classes.tts import TextToSpeechService 
-from classes.vc import VoiceCloningService
 from classes.ttm import MusicGenerationService
 from classes.aimodel import AIModelService
 
@@ -30,10 +28,8 @@ if os.path.exists(os.path.join(project_root, 'app')):
 class AIModelController():
     def __init__(self):
         self.aimodel = AIModelService()
-        self.text_to_speech_service = TextToSpeechService()
         self.music_generation_service = MusicGenerationService()
-        self.voice_cloning_service = VoiceCloningService()
-        self.current_service = self.text_to_speech_service
+        self.current_service = self.music_generation_service
         self.service = service_flags
         self.last_run_start_time = dt.datetime.now()
 
@@ -52,15 +48,8 @@ class AIModelController():
     async def run_services(self):
         while True:
             self.check_and_update_wandb_run()
-            if isinstance(self.current_service, TextToSpeechService) and self.service["TextToSpeechService"]:
+            if isinstance(self.current_service, MusicGenerationService) and self.service["MusicGenerationService"]:
                 await self.current_service.run_async()
-                self.current_service = self.music_generation_service
-            elif isinstance(self.current_service, MusicGenerationService) and self.service["MusicGenerationService"]:
-                await self.current_service.run_async()
-                self.current_service = self.voice_cloning_service
-            elif isinstance(self.current_service, VoiceCloningService) and self.service["VoiceCloningService"]:
-                await self.current_service.run_async()
-                self.current_service = self.text_to_speech_service
 
     def check_and_update_wandb_run(self):
         # Calculate the time difference between now and the last run start time
