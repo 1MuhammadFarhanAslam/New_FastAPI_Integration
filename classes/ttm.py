@@ -102,13 +102,17 @@ class MusicGenerationService(AIModelService):
         # Network querying logic
         if duration == 15:
             self.duration = 755
+            time_out = 100
         elif duration == 30:
             self.duration = 1510
+            time_out = 200
         elif duration == 45:
             self.duration = 2265
+            time_out = 300
         elif duration == 60:
             self.duration = 3020
-
+            time_out = 400
+            
         responses = self.dendrite.query(
             filtered_axons,
             lib.protocol.MusicGeneration(text_input=prompt, duration=self.duration ),
