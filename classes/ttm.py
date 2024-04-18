@@ -98,7 +98,7 @@ class MusicGenerationService(AIModelService):
                     # set all nodes without ips set to 0
                     self.scores = self.scores * torch.Tensor([self.metagraph.neurons[uid].axon_info.ip != '0.0.0.0' for uid in self.metagraph.uids])
 
-    def query_network(self,filtered_axons, prompt, duration=755, time_out=100):
+    def query_network(self,filtered_axons, prompt, duration=15, time_out=100):
         # Network querying logic
         if duration == 15:
             self.duration = 755
@@ -112,7 +112,7 @@ class MusicGenerationService(AIModelService):
         elif duration == 60:
             self.duration = 3020
             time_out = 400
-            
+
         responses = self.dendrite.query(
             filtered_axons,
             lib.protocol.MusicGeneration(text_input=prompt, duration=self.duration ),
