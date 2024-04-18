@@ -39,7 +39,7 @@ class MusicGenerationService(AIModelService):
         self.last_reset_weights_block = self.current_block
         self.filtered_axon = []
         self.combinations = []
-        self.duration = 755  #755 tokens = 15 seconds music
+        self.duration = None  
         self.lock = asyncio.Lock()
         self.best_uid = self.priority_uids(self.metagraph)
         
@@ -89,7 +89,7 @@ class MusicGenerationService(AIModelService):
 
                 filtered_axons = self.get_filtered_axons_from_combinations()
                 bt.logging.info(f"______________TTM-Prompt______________: {g_prompt}")
-                responses = self.query_network(filtered_axons,g_prompt)
+                responses = self.query_network(filtered_axons, g_prompt)
                 self.process_responses(filtered_axons,responses, g_prompt)
 
                 if self.last_reset_weights_block + 50 < self.current_block:
@@ -98,14 +98,26 @@ class MusicGenerationService(AIModelService):
                     # set all nodes without ips set to 0
                     self.scores = self.scores * torch.Tensor([self.metagraph.neurons[uid].axon_info.ip != '0.0.0.0' for uid in self.metagraph.uids])
 
-    def query_network(self,filtered_axons, prompt):
+    def query_network(self,filtered_axons, prompt, duration=15, time_out=100):
         # Network querying logic
-        
+        if duration == 15:
+            self.duration = 755
+            time_out = 100
+        elif duration == 30:
+            self.duration = 1510
+            time_out = 200
+        elif duration == 45:
+            self.duration = 2265
+            time_out = 300
+        elif duration == 60:
+            self.duration = 3020
+            time_out = 400
+
         responses = self.dendrite.query(
             filtered_axons,
             lib.protocol.MusicGeneration(text_input=prompt, duration=self.duration ),
             deserialize=True,
-            timeout=140,
+            timeout=time_out,
         )
         return responses
     
