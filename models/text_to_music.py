@@ -9,14 +9,15 @@ class MusicGenerator:
         self.model = MusicgenForConditionalGeneration.from_pretrained(self.model_name)
         self.model.to(self.device)
 
-    def generate_music(self, prompt,token):
+    def generate_music(self, prompt, duration):
+        self.model = self.model.set_generation_params(duration=duration)
         try:
             inputs = self.processor(
                 text=[prompt],
                 padding=True,
                 return_tensors="pt",
             ).to(self.device)
-            audio_values = self.model.generate(**inputs, max_new_tokens=token)
+            audio_values = self.model.generate(**inputs)
             return audio_values[0, 0].cpu().numpy()
         except Exception as e:
             print(f"An error occurred with {self.model_name}: {e}")
