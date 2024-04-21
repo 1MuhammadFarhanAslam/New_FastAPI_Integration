@@ -51,7 +51,7 @@ class MusicGenerator:
             # Generate music from text description
             wav = self.model.generate([prompt])
             # Return the generated waveform for the first result
-            return wav[0].cpu()
+            return wav.cpu()
         except Exception as e:
             print(f"An error occurred: {e}")
             return None
