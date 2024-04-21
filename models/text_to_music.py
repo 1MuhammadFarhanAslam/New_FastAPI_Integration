@@ -34,8 +34,9 @@ from audiocraft.models import MusicGen
 from audiocraft.data.audio import audio_write
 
 class MusicGenerator:
-    def __init__(self, model_name="small"):
-        self.model = MusicGen.get_pretrained(model_name)
+    def __init__(self, model_path="facebook/musicgen-medium"):
+        self.model_name = model_path  
+        self.model = MusicGen.get_pretrained(self.model_name)
         self.sample_rate = self.model.sample_rate
 
     def generate_music(self, prompt, duration=15, temperature=0.7, top_k=250):
