@@ -174,6 +174,7 @@ def main(config):
     def ProcessMusic(synapse: lib.protocol.MusicGeneration) -> lib.protocol.MusicGeneration:
         bt.logging.info(f"Generating music with the model: {config.music_model}")
         music = ttm_models.generate_music(synapse.text_input, duration=synapse.duration)
+        bt.logging.info(f"Music generated with the model AND THE MUSIC IS : {music}")
 
         # Check if 'music' contains valid audio data
         if music is None:
