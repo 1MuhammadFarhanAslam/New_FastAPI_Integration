@@ -184,10 +184,12 @@ def main(config):
             try:
                 sampling_rate = 32000
                 # Assuming write_wav function exists and works as intended
-                write_wav("musicgen_out.wav", rate=sampling_rate, data=music) # synapse.dendrite.hotkey + "_musicgen_out.wav"
+                filename = "musicgen_out.wav" 
+                torchaudio.save(filename, music.unsqueeze(0), sampling_rate)
+                # write_wav("musicgen_out.wav", rate=sampling_rate, data=music_numpy) # synapse.dendrite.hotkey + "_musicgen_out.wav"
                 bt.logging.success(f"Text to Music has been generated! and saved to: musicgen_out.wav")
                 # Assuming convert_music_to_tensor function exists to convert WAV to tensor
-                music_tensor = convert_music_to_tensor("musicgen_out.wav")
+                music_tensor = convert_music_to_tensor(filename)
                 synapse.music_output = music_tensor
                 return synapse
             except Exception as e:
