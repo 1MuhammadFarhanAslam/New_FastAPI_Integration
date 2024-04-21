@@ -12,7 +12,7 @@ class MusicGenerator:
         # self.processor = AutoProcessor.from_pretrained(self.model_name)
         # self.model = MusicgenForConditionalGeneration.from_pretrained(self.model_name)
         self.model = MusicGen.get_pretrained(self.model_name)
-        self.model.to(self.device)
+        # self.model.to(self.device)
 
     def generate_music(self, prompt, duration):
         self.model = self.model.set_generation_params(duration=duration)
