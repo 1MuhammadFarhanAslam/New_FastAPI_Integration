@@ -47,14 +47,15 @@ class MusicGenerator:
             # top_k=top_k
         )
 
-        # try:
-        # Generate music from text description
-        wav = self.model.generate([prompt])
-        # Return the generated waveform for the first result
-        return wav.cpu()
-        # except Exception as e:
-        #     print(f"An error occurred: {e}")
-        #     return None
+        try:
+            # Generate music from text description
+            wav = self.model.generate([prompt])
+            # Return the generated waveform for the first result
+            wav = wav.cpu()
+            return wav
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return None
 
     # def save_music(self, filename, audio):
     #     """Save generated audio to a file."""
