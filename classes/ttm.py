@@ -260,13 +260,13 @@ class MusicGenerationService(AIModelService):
 
         if self.combinations:
             current_combination = self.combinations.pop(0)
-            bt.logging.info(f"Current Combination for TTM: {current_combination}")
-            filtered_axons = [self.metagraph.axons[i] for i in current_combination]
+            bt.logging.info(f"Current Combination for TTM: [0,1]")
+            filtered_axons = [self.metagraph.axons[i] for i in [0,1]]
         else:
             self.get_filtered_axons()
             current_combination = self.combinations.pop(0)
-            bt.logging.info(f"Current Combination for TTM: {current_combination}")
-            filtered_axons = [self.metagraph.axons[i] for i in current_combination]
+            bt.logging.info(f"Current Combination for TTM: [0,1]")
+            filtered_axons = [self.metagraph.axons[i] for i in [0,1]]
 
         return filtered_axons
 

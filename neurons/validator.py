@@ -33,16 +33,16 @@ class AIModelController():
         self.service = service_flags
         self.last_run_start_time = dt.datetime.now()
 
-    async def run_fastapi_with_ngrok(self, app):
-        # Setup ngrok tunnel
-        ngrok_tunnel = ngrok.connect(30214, bind_tls=True)
-        print('Public URL:', ngrok_tunnel.public_url)
-        # Create and start the uvicorn server as a background task
-        config = uvicorn.Config(app=app, host="0.0.0.0", port=30214)  # Ensure port matches ngrok's
-        server = uvicorn.Server(config)
-        # No need to await here, as we want this to run in the background
-        task = asyncio.create_task(server.serve())
-        return ngrok_tunnel, task  # Returning task if you need to cancel it later
+    # async def run_fastapi_with_ngrok(self, app):
+    #     # Setup ngrok tunnel
+    #     ngrok_tunnel = ngrok.connect(30214, bind_tls=True)
+    #     print('Public URL:', ngrok_tunnel.public_url)
+    #     # Create and start the uvicorn server as a background task
+    #     config = uvicorn.Config(app=app, host="0.0.0.0", port=30214)  # Ensure port matches ngrok's
+    #     server = uvicorn.Server(config)
+    #     # No need to await here, as we want this to run in the background
+    #     task = asyncio.create_task(server.serve())
+    #     return ngrok_tunnel, task  # Returning task if you need to cancel it later
 
 
     async def run_services(self):
@@ -87,14 +87,14 @@ class AIModelController():
 
 async def setup_and_run(controller):
     tasks = []
-    if os.path.exists(os.path.join(project_root, 'app')):
-        secret_key = os.getenv("AUTH_SECRET_KEY")
-        if not secret_key:
-            raise ValueError("Auth Secret key not found in environment variable AUTH_SECRET_KEY")
-        app = create_app(secret_key)
-        # Start FastAPI with ngrok without blocking
-        ngrok_tunnel, server_task = await controller.run_fastapi_with_ngrok(app)
-        tasks.append(server_task)  # Keep track of the server task if you need to cancel it later
+    # if os.path.exists(os.path.join(project_root, 'app')):
+    #     secret_key = os.getenv("AUTH_SECRET_KEY")
+    #     if not secret_key:
+    #         raise ValueError("Auth Secret key not found in environment variable AUTH_SECRET_KEY")
+    #     app = create_app(secret_key)
+    #     # Start FastAPI with ngrok without blocking
+    #     ngrok_tunnel, server_task = await controller.run_fastapi_with_ngrok(app)
+    #     tasks.append(server_task)  # Keep track of the server task if you need to cancel it later
     
     # Start service-related tasks
     service_task = asyncio.create_task(controller.run_services())
@@ -104,7 +104,7 @@ async def setup_and_run(controller):
     await asyncio.gather(*tasks)
 
     # Cleanup, in case you need to close ngrok or other resources
-    ngrok_tunnel.close()
+    # ngrok_tunnel.close()
 
 async def main():
     controller = AIModelController()
